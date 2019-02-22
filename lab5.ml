@@ -152,7 +152,7 @@ exception Invalid_color of string ;;
 let validated_rgb (c : color) : color =
   let bad (x : int) : bool = (x < 0 || x > 255) in
   match c with
-  | Simple x -> c
+  | Simple _ -> c
   | RGB (r, g, b) ->
     if bad r then raise (Invalid_color "bad red channel")
     else if bad g then raise (Invalid_color "bad green channel")
@@ -192,7 +192,7 @@ let convert_to_rgb (c : color) : int * int * int =
     | Crimson -> (164, 16, 52)
     | Orange -> (255, 165, 0)
     | Yellow -> (255, 255, 0)
-    | Green -> (0, 128, 0)
+    | Green -> (0, 255, 0)
     | Blue -> (0, 0, 255)
     | Indigo -> (75, 0, 130)
     | Violet -> (240, 130, 240) ;;
@@ -367,7 +367,8 @@ Exercise 13: Complete the function below that counts the number of
 people in a given family. Be sure you count all spouses and children.
 ......................................................................*)
 
-let count_people (fam : family) : int =
+let rec count_people (fam : family) : int =
   match fam with
   | Single _ -> 1
-  | Family (_, _, c) -> 2 + List.length c ;;
+  | Family (_, _, c) -> 2 + List.fold_left (+) 0
+                                           (List.map count_people c) ;;
